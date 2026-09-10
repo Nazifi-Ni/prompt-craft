@@ -123,8 +123,6 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  
-  const { data: settings } = useQuery(siteSettingsQuery());
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
@@ -135,11 +133,20 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RootContent />
+    </QueryClientProvider>
+  );
+}
+
+function RootContent() {
+  const { data: settings } = useQuery(siteSettingsQuery());
   const primaryColorSetting = settings?.find((s) => s.key === "primary_color");
   const primaryColor = primaryColorSetting?.value?.color;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {primaryColor && (
         <style dangerouslySetInnerHTML={{
           __html: `:root { 
@@ -153,6 +160,6 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="top-center" />
-    </QueryClientProvider>
+    </>
   );
 }
