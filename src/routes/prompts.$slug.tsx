@@ -242,10 +242,12 @@ function PromptWorkspace() {
                   Your prompt
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" className="rounded-full" onClick={() => toast.info("AI Integration is coming soon. For now, please copy the prompt.")}>
-                    <Sparkles className="size-4" />
-                    Generate Answer with AI
-                  </Button>
+                  {isPro && (
+                    <Button variant="outline" className="rounded-full" onClick={() => toast.info("AI Integration is coming soon. For now, please copy the prompt.")}>
+                      <Sparkles className="size-4" />
+                      Generate Answer with AI
+                    </Button>
+                  )}
                   <Button className="rounded-full" onClick={copyPrompt}>
                     {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
                     {copied ? "Copied" : "Copy prompt"}
