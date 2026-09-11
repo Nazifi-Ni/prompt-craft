@@ -40,48 +40,7 @@ export const Route = createFileRoute("/prompts/$slug")({
   component: PromptWorkspace,
 });
 
-import { createServerFn } from "@tanstack/react-start";
-
-const generateAnswerFn = createServerFn({ method: "POST" })
-  .validator((data: { prompt: string }) => data)
-  .handler(async ({ data }) => {
-    try {
-      const apiKey = process.env.AGENT_ROUTER_API_KEY || process.env.OPENAI_API_KEY;
-      if (!apiKey) {
-        throw new Error("AI API key is missing on the server.");
-      }
-
-      // Dynamically import openai ONLY on the server side to prevent client build errors
-      const { default: OpenAI } = await import("openai");
-
-      const openai = new OpenAI({
-        apiKey,
-        baseURL: process.env.AGENT_ROUTER_BASE_URL || "https://agentrouter.org/v1",
-        defaultHeaders: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-      });
-
-      const response = await openai.chat.completions.create({
-        model: process.env.AI_MODEL || "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful expert assistant. Provide a highly accurate and concise response." },
-          { role: "user", content: data.prompt }
-        ],
-        max_tokens: 1500,
-        temperature: 0.7,
-      });
-
-      if (!response.choices || !response.choices[0]) {
-        throw new Error("Invalid API Response: " + JSON.stringify(response));
-      }
-
-      return { answer: response.choices[0].message?.content || "No response generated." };
-    } catch (error: any) {
-      console.error("AI Generation Error:", error);
-      throw new Error(error.message || "Failed to generate answer.");
-    }
-  });
+import OpenAI from "openai";
 
 function PromptWorkspace() {
   const { slug } = Route.useParams();
@@ -108,8 +67,33 @@ function PromptWorkspace() {
     setIsGenerating(true);
     setAiResponse(null);
     try {
-      const res = await generateAnswerFn({ data: { prompt: output } });
-      setAiResponse(res.answer);
+      // Initialize OpenAI directly in the browser
+      const apiKey = import.meta.env.VITE_AGENT_ROUTER_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error("AI API key is missing. Please add VITE_AGENT_ROUTER_API_KEY to your environment variables.");
+      }
+
+      const openai = new OpenAI({
+        apiKey,
+        baseURL: import.meta.env.VITE_AGENT_ROUTER_BASE_URL || "https://agentrouter.org/v1",
+        dangerouslyAllowBrowser: true // Required since we are bypassing the server
+      });
+
+      const response = await openai.chat.completions.create({
+        model: import.meta.env.VITE_AI_MODEL || "deepseek-v4-flash",
+        messages: [
+          { role: "system", content: "You are a helpful expert assistant. Provide a highly accurate and concise response." },
+          { role: "user", content: output }
+        ],
+        max_tokens: 1500,
+        temperature: 0.7,
+      });
+
+      if (!response.choices || !response.choices[0]) {
+        throw new Error("Invalid API Response: " + JSON.stringify(response));
+      }
+
+      setAiResponse(response.choices[0].message?.content || "No response generated.");
       toast.success("Answer generated successfully!");
       if (user && full) {
         void supabase
@@ -117,6 +101,7 @@ function PromptWorkspace() {
           .insert({ user_id: user.id, prompt_id: full.id, action: "generate" });
       }
     } catch (err: any) {
+      console.error("AI Generation Error:", err);
       toast.error(err.message || "Failed to generate answer. Please check your AI API key.");
     } finally {
       setIsGenerating(false);
