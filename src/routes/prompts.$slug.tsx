@@ -63,7 +63,7 @@ const generateAnswerFn = createServerFn({ method: "POST" })
       });
 
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "deepseek-v4-flash",
         messages: [
           { role: "system", content: "You are a helpful expert assistant. Provide a highly accurate and concise response." },
           { role: "user", content: data.prompt }
