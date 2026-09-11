@@ -40,6 +40,42 @@ export const Route = createFileRoute("/prompts/$slug")({
   component: PromptWorkspace,
 });
 
+import { createServerFn } from "@tanstack/react-start";
+
+const generateAnswerFn = createServerFn({ method: "POST" })
+  .validator((data: { prompt: string }) => data)
+  .handler(async ({ data }) => {
+    try {
+      const apiKey = process.env.AGENT_ROUTER_API_KEY || process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error("AI API key is missing on the server.");
+      }
+
+      // Dynamically import openai ONLY on the server side to prevent client build errors
+      const { default: OpenAI } = await import("openai");
+
+      const openai = new OpenAI({
+        apiKey,
+        baseURL: process.env.AGENT_ROUTER_BASE_URL || "https://api.agentrouter.org/v1",
+      });
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are a helpful expert assistant. Provide a highly accurate and concise response." },
+          { role: "user", content: data.prompt }
+        ],
+        max_tokens: 1500,
+        temperature: 0.7,
+      });
+
+      return { answer: response.choices[0]?.message?.content || "No response generated." };
+    } catch (error: any) {
+      console.error("AI Generation Error:", error);
+      throw new Error(error.message || "Failed to generate answer.");
+    }
+  });
+
 function PromptWorkspace() {
   const { slug } = Route.useParams();
   const { user, isPro } = useAccount();
@@ -65,7 +101,6 @@ function PromptWorkspace() {
     setIsGenerating(true);
     setAiResponse(null);
     try {
-      const { generateAnswerFn } = await import("@/server/ai.server");
       const res = await generateAnswerFn({ data: { prompt: output } });
       setAiResponse(res.answer);
       toast.success("Answer generated successfully!");
