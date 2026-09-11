@@ -65,7 +65,7 @@ function PromptWorkspace() {
     setIsGenerating(true);
     setAiResponse(null);
     try {
-      const { generateAnswerFn } = await import("@/server/ai");
+      const { generateAnswerFn } = await import("@/server/ai.server");
       const res = await generateAnswerFn({ data: { prompt: output } });
       setAiResponse(res.answer);
       toast.success("Answer generated successfully!");
