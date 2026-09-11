@@ -49,6 +49,8 @@ function PromptWorkspace() {
   const { data: favorites } = useQuery(favoritesQuery(user?.id));
   const [values, setValues] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const variables = useMemo(() => parseVariables(full?.variables), [full?.variables]);
   const output = useMemo(
@@ -57,6 +59,27 @@ function PromptWorkspace() {
   );
 
   const favorite = (favorites ?? []).find((f) => f.prompt_id === full?.id);
+
+  async function generateAnswer() {
+    if (!output || isGenerating) return;
+    setIsGenerating(true);
+    setAiResponse(null);
+    try {
+      const { generateAnswerFn } = await import("@/server/ai");
+      const res = await generateAnswerFn({ data: { prompt: output } });
+      setAiResponse(res.answer);
+      toast.success("Answer generated successfully!");
+      if (user && full) {
+        void supabase
+          .from("prompt_usage")
+          .insert({ user_id: user.id, prompt_id: full.id, action: "generate" });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to generate answer. Please check your AI API key.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
 
   async function copyPrompt() {
     try {
@@ -240,9 +263,14 @@ function PromptWorkspace() {
                   Your prompt
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" className="rounded-full" onClick={() => toast.info("AI Integration is coming soon. For now, please copy the prompt.")}>
-                    <Sparkles className="size-4" />
-                    Generate Answer with AI
+                  <Button 
+                    variant="outline" 
+                    className="rounded-full" 
+                    onClick={generateAnswer}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className={`size-4 ${isGenerating ? 'animate-pulse text-primary' : ''}`} />
+                    {isGenerating ? "Generating..." : "Generate Answer with AI"}
                   </Button>
                   <Button className="rounded-full" onClick={copyPrompt}>
                     {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
@@ -253,6 +281,18 @@ function PromptWorkspace() {
               <pre className="mt-4 max-h-[28rem] overflow-auto rounded-xl bg-secondary p-4 text-sm leading-relaxed whitespace-pre-wrap text-secondary-foreground">
                 {output}
               </pre>
+
+              {aiResponse && (
+                <div className="mt-6 border-t pt-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="size-5 text-primary" />
+                    <h3 className="font-display font-semibold text-foreground">AI Response</h3>
+                  </div>
+                  <div className="prose prose-sm max-w-none dark:prose-invert bg-primary/5 rounded-xl p-4">
+                    <pre className="whitespace-pre-wrap font-sans bg-transparent p-0 m-0 text-foreground">{aiResponse}</pre>
+                  </div>
+                </div>
+              )}
             </div>
 
             {full.instructions && (
