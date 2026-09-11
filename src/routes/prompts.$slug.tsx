@@ -69,7 +69,11 @@ const generateAnswerFn = createServerFn({ method: "POST" })
         temperature: 0.7,
       });
 
-      return { answer: response.choices[0]?.message?.content || "No response generated." };
+      if (!response.choices || !response.choices[0]) {
+        throw new Error("Invalid API Response: " + JSON.stringify(response));
+      }
+
+      return { answer: response.choices[0].message?.content || "No response generated." };
     } catch (error: any) {
       console.error("AI Generation Error:", error);
       throw new Error(error.message || "Failed to generate answer.");
