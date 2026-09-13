@@ -9,20 +9,31 @@ export function ReferralBanner() {
   const { user } = useAccount();
   const [refCode, setRefCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
     
     async function fetchRefCode() {
-      // First try to get it
-      const { data } = await supabase
-        .from('profiles')
-        .select('referral_code')
-        .eq('id', user.id)
-        .single();
-        
-      if (data?.referral_code) {
-        setRefCode(data.referral_code);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('referral_code')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) {
+          console.error("Error fetching referral code:", error);
+        } else if (data?.referral_code) {
+          setRefCode(data.referral_code);
+        }
+      } catch (err) {
+        console.error("Failed to fetch referral code:", err);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchRefCode();
@@ -47,8 +58,24 @@ export function ReferralBanner() {
     );
   }
 
-  // If no code is loaded yet, hide to prevent flicker
-  if (!refCode) return null;
+  if (isLoading) {
+    return (
+      <div className="mt-8 rounded-xl bg-primary/5 border border-primary/20 p-6 h-24 flex items-center justify-center animate-pulse">
+        <p className="text-sm text-muted-foreground">Loading referral program...</p>
+      </div>
+    );
+  }
+
+  // If no code is loaded after fetching, display an error message
+  if (!refCode) {
+    return (
+      <div className="mt-8 rounded-xl bg-destructive/10 border border-destructive/20 p-6">
+        <p className="text-sm text-destructive">
+          Referral program is currently unavailable. (Ensure the database script has been run).
+        </p>
+      </div>
+    );
+  }
 
   const referralUrl = `${window.location.origin}/auth?ref=${refCode}`;
   const whatsappMessage = `Hey! I'm using Meridian to write my final year project and proposals with AI. Check it out using my link! 🚀\n\n${referralUrl}`;
