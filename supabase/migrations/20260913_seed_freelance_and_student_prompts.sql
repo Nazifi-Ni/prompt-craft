@@ -135,7 +135,7 @@ For each tier, provide:
    'intermediate', ARRAY['pricing','strategy','freelance'], 'pro', 1)
 ) AS v(category_slug, slug, title, description, purpose, instructions, body, variables, pro_tip, warning, difficulty, tags, access_level, display_order)
 JOIN tk ON tk.category_slug = v.category_slug
-ON CONFLICT (slug) DO UPDATE SET
+ON CONFLICT (toolkit_id, slug) DO UPDATE SET
   title = EXCLUDED.title,
   description = EXCLUDED.description,
   purpose = EXCLUDED.purpose,
@@ -223,7 +223,7 @@ Please begin now with the first subtopic and question.',
    'beginner', ARRAY['tutor','socratic','learning'], 4)
 ) AS v(category_slug, slug, title, description, purpose, instructions, body, variables, pro_tip, warning, difficulty, tags, display_order)
 JOIN tk ON tk.category_slug = v.category_slug
-ON CONFLICT (slug) DO UPDATE SET
+ON CONFLICT (toolkit_id, slug) DO UPDATE SET
   title = EXCLUDED.title,
   description = EXCLUDED.description,
   purpose = EXCLUDED.purpose,
@@ -286,7 +286,7 @@ Perform a comprehensive Skill Gap & Transition Analysis:
    'intermediate', ARRAY['skills','career-pivot','cv'], 3)
 ) AS v(category_slug, slug, title, description, purpose, instructions, body, variables, pro_tip, warning, difficulty, tags, display_order)
 JOIN tk ON tk.category_slug = v.category_slug
-ON CONFLICT (slug) DO UPDATE SET
+ON CONFLICT (toolkit_id, slug) DO UPDATE SET
   title = EXCLUDED.title,
   description = EXCLUDED.description,
   purpose = EXCLUDED.purpose,
