@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,6 +17,7 @@ import {
 import { faqsQuery, plansQuery } from "@/lib/queries";
 import { formatPrice } from "@/lib/format";
 import { useAccount } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -39,6 +42,78 @@ function PricingPage() {
   const { data: plans, isLoading } = useQuery(plansQuery());
   const { data: faqs } = useQuery(faqsQuery());
   const { user, isPro } = useAccount();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  useEffect(() => {
+    // Load Paystack script securely (check if exists to support React Strict Mode)
+    if (!document.querySelector('script[src="https://js.paystack.co/v1/inline.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const handleCheckout = (plan: any) => {
+    if (plan.price_amount <= 0 || plan.grants_access === 'free') {
+      toast.error("This plan is free. No checkout required.");
+      return;
+    }
+
+    if (!(window as any).PaystackPop) {
+      toast.error("Payment gateway is still loading. Please try again in a moment.");
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    
+    try {
+      const amountInKobo = Math.round(Number(plan.price_amount) * 100);
+      
+      const handler = (window as any).PaystackPop.setup({
+        key: 'pk_live_c7841dbfe0abb4fe3e61556c9d525cb159fafe31',
+        email: user?.email || "customer@promptcraft.com",
+        amount: amountInKobo,
+        currency: plan.currency || 'NGN',
+        callback: function(response: any) {
+          (async () => {
+            try {
+              const { error } = await supabase.rpc('activate_subscription_after_payment', {
+                plan_id: plan.id,
+                reference: response.reference,
+                amount: plan.price_amount
+              });
+              
+              if (error) throw error;
+              
+              toast.success("Payment successful! Pro activated.");
+              queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+              queryClient.invalidateQueries({ queryKey: ["transactions"] });
+              queryClient.invalidateQueries({ queryKey: ["account-state"] });
+              router.invalidate();
+              router.navigate({ to: "/subscription" });
+            } catch (error: any) {
+              console.error(error);
+              toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + response.reference);
+            } finally {
+              setIsCheckoutLoading(false);
+            }
+          })();
+        },
+        onClose: function() {
+          setIsCheckoutLoading(false);
+          toast.error("Payment cancelled.");
+        }
+      });
+      handler.openIframe();
+    } catch (err: any) {
+      console.error(err);
+      setIsCheckoutLoading(false);
+      toast.error(`Error: ${err.message || String(err)}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,15 +168,31 @@ function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="mt-6 rounded-full" variant={plan.grants_access === "pro" ? "default" : "outline"}>
-                {user ? (
-                  <Link to="/subscription">
-                    {isPro && plan.grants_access === "pro" ? "Manage plan" : "Choose plan"}
-                  </Link>
+              {user ? (
+                isPro && plan.grants_access === "pro" ? (
+                  <Button asChild className="mt-6 rounded-full" variant="outline">
+                    <Link to="/subscription">Manage plan</Link>
+                  </Button>
                 ) : (
+                  <Button 
+                    className="mt-6 rounded-full" 
+                    variant={plan.grants_access === "pro" ? "default" : "outline"}
+                    disabled={isCheckoutLoading}
+                    onClick={() => plan.grants_access === "pro" ? handleCheckout(plan) : undefined}
+                    asChild={plan.grants_access === "free"}
+                  >
+                    {plan.grants_access === "free" ? (
+                      <Link to="/subscription">Current Plan</Link>
+                    ) : (
+                      "Choose plan"
+                    )}
+                  </Button>
+                )
+              ) : (
+                <Button asChild className="mt-6 rounded-full" variant={plan.grants_access === "pro" ? "default" : "outline"}>
                   <Link to="/auth">Create an account</Link>
-                )}
-              </Button>
+                </Button>
+              )}
             </div>
           ))}
         </div>
