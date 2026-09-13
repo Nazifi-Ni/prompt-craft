@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +29,67 @@ export const Route = createFileRoute("/_authenticated/subscription")({
 function SubscriptionPage() {
   const { user, isPro } = useAccount();
   const { data: plans } = useQuery(plansQuery());
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  useEffect(() => {
+    // Load Paystack script securely
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleCheckout = (plan: any) => {
+    if (plan.price_amount <= 0 || plan.grants_access === 'free') {
+      toast.error("This plan is free. No checkout required.");
+      return;
+    }
+
+    if (!(window as any).PaystackPop) {
+      toast.error("Payment gateway is still loading. Please try again in a moment.");
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    const paystack = new (window as any).PaystackPop();
+    paystack.newTransaction({
+      key: 'pk_test_YOUR_PAYSTACK_PUBLIC_KEY', // <-- USER MUST CHANGE THIS
+      email: user?.email,
+      amount: Number(plan.price_amount) * 100, // Paystack uses kobo (multiply by 100)
+      currency: plan.currency || 'NGN',
+      onSuccess: async (transaction: any) => {
+        try {
+          const { error } = await supabase.rpc('activate_subscription_after_payment', {
+            plan_id: plan.id,
+            reference: transaction.reference,
+            amount: plan.price_amount
+          });
+          
+          if (error) throw error;
+          
+          toast.success("Payment successful! Pro activated.");
+          queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+          queryClient.invalidateQueries({ queryKey: ["transactions"] });
+          queryClient.invalidateQueries({ queryKey: ["account-state"] });
+          router.invalidate();
+        } catch (error: any) {
+          console.error(error);
+          toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + transaction.reference);
+        } finally {
+          setIsCheckoutLoading(false);
+        }
+      },
+      onCancel: () => {
+        setIsCheckoutLoading(false);
+        toast.error("Payment cancelled.");
+      }
+    });
+  };
 
   const { data: subs } = useQuery({
     queryKey: ["subscriptions", user?.id],
@@ -106,12 +169,24 @@ function SubscriptionPage() {
               <div>
                 <p className="text-sm font-semibold text-foreground">{p.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {formatPrice(Number(p.price_amount), p.currency)} · {p.interval}
+                  {formatPrice(Number(p.price_amount), p.currency)} / {p.interval}
                 </p>
               </div>
-              <Badge variant="outline" className="rounded-full">
-                {p.grants_access === "pro" ? "Pro access" : "Free access"}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className="rounded-full">
+                  {p.grants_access === "pro" ? "Pro access" : "Free access"}
+                </Badge>
+                {p.grants_access === "pro" && (
+                  <Button 
+                    size="sm" 
+                    className="rounded-full"
+                    disabled={isCheckoutLoading}
+                    onClick={() => handleCheckout(p)}
+                  >
+                    Choose Plan
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>
