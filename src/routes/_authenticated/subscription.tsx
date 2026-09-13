@@ -56,39 +56,46 @@ function SubscriptionPage() {
     }
 
     setIsCheckoutLoading(true);
-    const paystack = new (window as any).PaystackPop();
-    paystack.newTransaction({
-      key: 'pk_live_c7841dbfe0abb4fe3e61556c9d525cb159fafe31', // <-- USER MUST CHANGE THIS
-      email: user?.email,
-      amount: Number(plan.price_amount) * 100, // Paystack uses kobo (multiply by 100)
-      currency: plan.currency || 'NGN',
-      onSuccess: async (transaction: any) => {
-        try {
-          const { error } = await supabase.rpc('activate_subscription_after_payment', {
-            plan_id: plan.id,
-            reference: transaction.reference,
-            amount: plan.price_amount
-          });
-          
-          if (error) throw error;
-          
-          toast.success("Payment successful! Pro activated.");
-          queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-          queryClient.invalidateQueries({ queryKey: ["transactions"] });
-          queryClient.invalidateQueries({ queryKey: ["account-state"] });
-          router.invalidate();
-        } catch (error: any) {
-          console.error(error);
-          toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + transaction.reference);
-        } finally {
+    
+    try {
+      const handler = (window as any).PaystackPop.setup({
+        key: 'pk_live_c7841dbfe0abb4fe3e61556c9d525cb159fafe31',
+        email: user?.email,
+        amount: Number(plan.price_amount) * 100, // Paystack uses kobo (multiply by 100)
+        currency: plan.currency || 'NGN',
+        callback: async (response: any) => {
+          try {
+            const { error } = await supabase.rpc('activate_subscription_after_payment', {
+              plan_id: plan.id,
+              reference: response.reference,
+              amount: plan.price_amount
+            });
+            
+            if (error) throw error;
+            
+            toast.success("Payment successful! Pro activated.");
+            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["account-state"] });
+            router.invalidate();
+          } catch (error: any) {
+            console.error(error);
+            toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + response.reference);
+          } finally {
+            setIsCheckoutLoading(false);
+          }
+        },
+        onClose: () => {
           setIsCheckoutLoading(false);
+          toast.error("Payment cancelled.");
         }
-      },
-      onCancel: () => {
-        setIsCheckoutLoading(false);
-        toast.error("Payment cancelled.");
-      }
-    });
+      });
+      handler.openIframe();
+    } catch (err) {
+      console.error(err);
+      setIsCheckoutLoading(false);
+      toast.error("Failed to load payment gateway. Please ensure your public key is set.");
+    }
   };
 
   const { data: subs } = useQuery({
