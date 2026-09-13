@@ -139,12 +139,50 @@ function ToolkitDetail() {
         </div>
 
         <div className="mt-14 space-y-12">
-          {grouped.map(({ category, items }, ci) => (
+          {/* Free Prompts Category */}
+          {(() => {
+            const allPrompts = [
+              ...(full.categories?.flatMap((c) => c.prompts ?? []) ?? []),
+              ...(full.prompts ?? []),
+            ];
+            const freePrompts = allPrompts.filter((p) => p.access_level === "free");
+            
+            if (freePrompts.length === 0) return null;
+            return (
+              <section>
+                <div className="flex items-center gap-3 border-b border-border/50 pb-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <span className="font-display font-bold">i</span>
+                  </div>
+                  <div>
+                    <h2 className="font-display text-xl font-semibold text-foreground">
+                      Free Category
+                    </h2>
+                    <p className="mt-1 text-sm text-muted-foreground">Open access prompts available to everyone.</p>
+                  </div>
+                </div>
+                <div className="mt-5 grid gap-3 md:grid-cols-2">
+                  {freePrompts.map((p, i) => (
+                    <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
+
+          {/* Pro Categories */}
+          {full.categories
+            .map((c) => ({
+              ...c,
+              prompts: (c.prompts ?? []).filter((p) => p.access_level !== "free"),
+            }))
+            .filter((c) => c.prompts.length > 0)
+            .map((category) => (
             <section key={category.id}>
-              <div className="flex items-baseline gap-3">
-                <span className="font-display text-2xl font-semibold text-accent tabular-nums">
-                  {String(ci + 1).padStart(2, "0")}
-                </span>
+              <div className="flex items-center gap-3 border-b border-border/50 pb-3">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                  <span className="font-display font-bold">{category.display_order}</span>
+                </div>
                 <div>
                   <h2 className="font-display text-xl font-semibold text-foreground">
                     {category.name}
@@ -155,26 +193,27 @@ function ToolkitDetail() {
                 </div>
               </div>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {items.map((p, i) => (
+                {category.prompts.map((p, i) => (
                   <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
                 ))}
-                {items.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No prompts here yet.</p>
-                )}
               </div>
             </section>
           ))}
 
-          {uncategorised.length > 0 && (
-            <section>
-              <h2 className="font-display text-xl font-semibold text-foreground">More prompts</h2>
-              <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {uncategorised.map((p, i) => (
-                  <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
-                ))}
-              </div>
-            </section>
-          )}
+          {(() => {
+            const proUncategorised = uncategorised.filter((p) => p.access_level !== "free");
+            if (proUncategorised.length === 0) return null;
+            return (
+              <section>
+                <h2 className="font-display text-xl font-semibold text-foreground">More prompts</h2>
+                <div className="mt-5 grid gap-3 md:grid-cols-2">
+                  {proUncategorised.map((p, i) => (
+                    <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
 
           {(bonuses ?? []).length > 0 && (
             <section>
