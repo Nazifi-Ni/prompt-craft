@@ -19,19 +19,37 @@ export function ReferralBanner() {
     
     async function fetchRefCode() {
       try {
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from('profiles')
           .select('referral_code')
           .eq('id', user.id)
-          .single();
+          .maybeSingle(); // Use maybeSingle to avoid 406 errors if row doesn't exist
           
         if (error) {
           console.error("Error fetching referral code:", error);
         } else if (data?.referral_code) {
           setRefCode(data.referral_code);
+        } else {
+          // Self-healing: If the row exists but has no code, or row is completely missing
+          const fallbackCode = user.id.substring(0, 8); // Use first 8 chars of user ID
+          
+          if (!data) {
+            // Profile row is missing entirely, create it
+            await supabase.from('profiles').insert({
+              id: user.id,
+              referral_code: fallbackCode
+            });
+          } else {
+            // Profile exists but no referral code, update it
+            await supabase.from('profiles').update({
+              referral_code: fallbackCode
+            }).eq('id', user.id);
+          }
+          
+          setRefCode(fallbackCode);
         }
       } catch (err) {
-        console.error("Failed to fetch referral code:", err);
+        console.error("Failed to fetch/generate referral code:", err);
       } finally {
         setIsLoading(false);
       }
