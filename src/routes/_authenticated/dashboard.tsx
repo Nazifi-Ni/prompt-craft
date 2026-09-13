@@ -4,6 +4,7 @@ import { BookMarked, Heart, Sparkles, User, Users } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolkitCard } from "@/components/toolkit-card";
+import { ReferralBanner } from "@/components/referral-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -132,6 +133,8 @@ function DashboardPage() {
             <span className="sm:ml-1 italic text-muted-foreground/80">Note: You must have an active or past Pro subscription to claim rewards.</span>
           </p>
         </div>
+        
+        <ReferralBanner />
 
         <div className="mt-6 flex flex-wrap gap-2">
           <Button asChild variant="outline" className="rounded-full">
