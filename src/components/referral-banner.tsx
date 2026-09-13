@@ -96,7 +96,15 @@ export function ReferralBanner() {
   }
 
   const referralUrl = `${window.location.origin}/auth?ref=${refCode}`;
-  const whatsappMessage = `Hey! I'm using Promptcraft to write my final year project and proposals with AI. Check it out using my link! 🚀\n\n${referralUrl}`;
+  const whatsappMessage = `Tired of ChatGPT giving you generic, robotic answers? 📉
+
+The secret isn't the AI—it's the prompt. I built Promptcraft to fix this. It’s a library of tested, fill-in-the-blank prompt templates designed for real-world tasks.
+
+1️⃣ Pick a toolkit (Freelancing, Job Hunting, Students)
+2️⃣ Fill in your context
+3️⃣ Copy a prompt that guarantees an expert-level result
+
+No more guessing what to tell the AI. Try Promptcraft for free today: 👉🏽 ${referralUrl}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
 
   const copyToClipboard = () => {
