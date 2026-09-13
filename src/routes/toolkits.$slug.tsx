@@ -141,10 +141,7 @@ function ToolkitDetail() {
         <div className="mt-14 space-y-12">
           {/* Free Prompts Category */}
           {(() => {
-            const allPrompts = [
-              ...(full.categories?.flatMap((c) => c.prompts ?? []) ?? []),
-              ...(full.prompts ?? []),
-            ];
+            const allPrompts = prompts ?? [];
             const freePrompts = allPrompts.filter((p) => p.access_level === "free");
             
             if (freePrompts.length === 0) return null;
@@ -171,10 +168,10 @@ function ToolkitDetail() {
           })()}
 
           {/* Pro Categories */}
-          {full.categories
+          {(categories ?? [])
             .map((c) => ({
               ...c,
-              prompts: (c.prompts ?? []).filter((p) => p.access_level !== "free"),
+              prompts: (prompts ?? []).filter((p) => p.category_id === c.id && p.access_level !== "free"),
             }))
             .filter((c) => c.prompts.length > 0)
             .map((category) => (
