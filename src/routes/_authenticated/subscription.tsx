@@ -64,29 +64,32 @@ function SubscriptionPage() {
         email: user?.email || "customer@promptcraft.com", // Fallback if email is somehow missing
         amount: amountInKobo,
         currency: plan.currency || 'NGN',
-        callback: async (response: any) => {
-          try {
-            const { error } = await supabase.rpc('activate_subscription_after_payment', {
-              plan_id: plan.id,
-              reference: response.reference,
-              amount: plan.price_amount
-            });
-            
-            if (error) throw error;
-            
-            toast.success("Payment successful! Pro activated.");
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-            queryClient.invalidateQueries({ queryKey: ["transactions"] });
-            queryClient.invalidateQueries({ queryKey: ["account-state"] });
-            router.invalidate();
-          } catch (error: any) {
-            console.error(error);
-            toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + response.reference);
-          } finally {
-            setIsCheckoutLoading(false);
-          }
+        callback: function(response: any) {
+          // Wrap the async logic inside a standard function
+          (async () => {
+            try {
+              const { error } = await supabase.rpc('activate_subscription_after_payment', {
+                plan_id: plan.id,
+                reference: response.reference,
+                amount: plan.price_amount
+              });
+              
+              if (error) throw error;
+              
+              toast.success("Payment successful! Pro activated.");
+              queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+              queryClient.invalidateQueries({ queryKey: ["transactions"] });
+              queryClient.invalidateQueries({ queryKey: ["account-state"] });
+              router.invalidate();
+            } catch (error: any) {
+              console.error(error);
+              toast.error("Payment succeeded, but activation failed. Please contact support with reference: " + response.reference);
+            } finally {
+              setIsCheckoutLoading(false);
+            }
+          })();
         },
-        onClose: () => {
+        onClose: function() {
           setIsCheckoutLoading(false);
           toast.error("Payment cancelled.");
         }
