@@ -51,7 +51,7 @@ export function ReferralBanner() {
   if (!refCode) return null;
 
   const referralUrl = `${window.location.origin}/auth?ref=${refCode}`;
-  const whatsappMessage = `Hey! I'm using Meridian to write my final year project and proposals with AI. Use my link to sign up and we both get 7 days of Pro for free! 🚀\n\n${referralUrl}`;
+  const whatsappMessage = `Hey! I'm using Meridian to write my final year project and proposals with AI. Check it out using my link! 🚀\n\n${referralUrl}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
 
   const copyToClipboard = () => {
@@ -68,7 +68,7 @@ export function ReferralBanner() {
           Unlock 7 Days of Pro for Free!
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          Share your unique link with classmates. When they sign up, you both instantly get a week of Pro access.
+          Share your unique link with classmates. When they sign up, you instantly get a week of Pro access.
         </p>
       </div>
       <div className="flex flex-wrap gap-3 shrink-0">
