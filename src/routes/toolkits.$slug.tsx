@@ -142,78 +142,41 @@ function ToolkitDetail() {
         </div>
 
         <div className="mt-14 space-y-12">
-          {/* Free Prompts Category */}
-          {(() => {
-            const allPrompts = prompts ?? [];
-            const freePrompts = allPrompts.filter((p) => !isPromptPro(p));
-            
-            if (freePrompts.length === 0) return null;
-            return (
-              <section>
-                <div className="flex items-center gap-3 border-b border-border/50 pb-3">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <span className="font-display font-bold">i</span>
-                  </div>
-                  <div>
-                    <h2 className="font-display text-xl font-semibold text-foreground">
-                      Free Category
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">Open access prompts available to everyone.</p>
-                  </div>
-                </div>
-                <div className="mt-5 grid gap-3 md:grid-cols-2">
-                  {freePrompts.map((p, i) => (
-                    <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
-                  ))}
-                </div>
-              </section>
-            );
-          })()}
-
-          {/* Pro Categories */}
-          {(categories ?? [])
-            .map((c) => ({
-              ...c,
-              prompts: (prompts ?? []).filter((p) => p.category_id === c.id && isPromptPro(p)),
-            }))
-            .filter((c) => c.prompts.length > 0)
+          {grouped
+            .filter((c) => c.items.length > 0)
             .map((category) => (
-            <section key={category.id}>
+            <section key={category.category.id}>
               <div className="flex items-center gap-3 border-b border-border/50 pb-3">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-                  <span className="font-display font-bold">{category.display_order}</span>
+                  <span className="font-display font-bold">{category.category.display_order}</span>
                 </div>
                 <div>
                   <h2 className="font-display text-xl font-semibold text-foreground">
-                    {category.name}
+                    {category.category.name}
                   </h2>
-                  {category.description && (
-                    <p className="mt-1 text-sm text-muted-foreground">{category.description}</p>
+                  {category.category.description && (
+                    <p className="mt-1 text-sm text-muted-foreground">{category.category.description}</p>
                   )}
                 </div>
               </div>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {category.prompts.map((p, i) => (
+                {category.items.map((p, i) => (
                   <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
                 ))}
               </div>
             </section>
           ))}
 
-          {(() => {
-            const proUncategorised = uncategorised.filter((p) => isPromptPro(p));
-            if (proUncategorised.length === 0) return null;
-            return (
-              <section>
-                <h2 className="font-display text-xl font-semibold text-foreground">More prompts</h2>
-                <div className="mt-5 grid gap-3 md:grid-cols-2">
-                  {proUncategorised.map((p, i) => (
-                    <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
-                  ))}
-                </div>
-              </section>
-            );
-          })()}
+          {uncategorised.length > 0 && (
+            <section>
+              <h2 className="font-display text-xl font-semibold text-foreground">More prompts</h2>
+              <div className="mt-5 grid gap-3 md:grid-cols-2">
+                {uncategorised.map((p, i) => (
+                  <PromptCard key={p.id} prompt={p} index={i} unlocked={isPro} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {(bonuses ?? []).length > 0 && (
             <section>
