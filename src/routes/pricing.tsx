@@ -22,13 +22,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing & Pro Access — Meridian Prompt Toolkits" },
+      { title: "Pricing & Pro Access — Promptcraft Prompt Toolkits" },
       {
         name: "description",
         content:
-          "Simple pricing for Meridian. Start free, upgrade to Pro monthly or annually to unlock every structured AI prompt across all toolkits.",
+          "Simple pricing for Promptcraft. Start free, upgrade to Pro monthly or annually to unlock every structured AI prompt across all toolkits.",
       },
-      { property: "og:title", content: "Pricing & Pro Access — Meridian" },
+      { property: "og:title", content: "Pricing & Pro Access — Promptcraft" },
       {
         property: "og:description",
         content: "Start free, upgrade to Pro to unlock every structured prompt in the library.",

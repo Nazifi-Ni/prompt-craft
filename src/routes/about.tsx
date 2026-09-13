@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Meridian — Honest AI Prompt Toolkits" },
+      { title: "About Promptcraft — Honest AI Prompt Toolkits" },
       {
         name: "description",
         content:
-          "Meridian builds structured AI prompt toolkits for scholarship applicants, students, job seekers and developers, with authenticity guardrails built into every prompt.",
+          "Promptcraft builds structured AI prompt toolkits for scholarship applicants, students, job seekers and developers, with authenticity guardrails built into every prompt.",
       },
-      { property: "og:title", content: "About Meridian" },
+      { property: "og:title", content: "About Promptcraft" },
       {
         property: "og:description",
         content:
@@ -52,7 +52,7 @@ function AboutPage() {
           Prompts that respect your real story
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Most prompt collections are long lists with no order and no accountability. Meridian is
+          Most prompt collections are long lists with no order and no accountability. Promptcraft is
           built like a reference library: every toolkit has a clear audience, a numbered set of
           categories, and prompts with instructions, examples, warnings and fill-in variables.
         </p>

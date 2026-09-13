@@ -15,16 +15,16 @@ import { toolkitsQuery } from "@/lib/queries";
 export const Route = createFileRoute("/toolkits/")({
   head: () => ({
     meta: [
-      { title: "All AI Prompt Toolkits — Meridian" },
+      { title: "All AI Prompt Toolkits — Promptcraft" },
       {
         name: "description",
         content:
-          "Browse every Meridian toolkit: scholarships, Nigerian students, job seekers, small business, web developers, researchers, interviews and content creation.",
+          "Browse every Promptcraft toolkit: scholarships, Nigerian students, job seekers, small business, web developers, researchers, interviews and content creation.",
       },
-      { property: "og:title", content: "All AI Prompt Toolkits — Meridian" },
+      { property: "og:title", content: "All AI Prompt Toolkits — Promptcraft" },
       {
         property: "og:description",
-        content: "Every specialised prompt library in the Meridian collection, in one directory.",
+        content: "Every specialised prompt library in the Promptcraft collection, in one directory.",
       },
     ],
   }),

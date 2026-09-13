@@ -27,8 +27,8 @@ import { isPromptPro } from "@/lib/access";
 export const Route = createFileRoute("/prompts/$slug")({
   head: ({ params }) => {
     const pretty = params.slug.replace(/-/g, " ");
-    const title = `${pretty} — AI prompt workspace | Meridian`;
-    const description = `Fill in your own details and copy a customised version of the “${pretty}” prompt from the Meridian library.`;
+    const title = `${pretty} — AI prompt workspace | Promptcraft`;
+    const description = `Fill in your own details and copy a customised version of the “${pretty}” prompt from the Promptcraft library.`;
     return {
       meta: [
         { title },

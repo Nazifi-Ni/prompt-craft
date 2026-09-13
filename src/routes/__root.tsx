@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Meridian — AI Prompts Built for Real Problems" },
+      { title: "Promptcraft — AI Prompts Built for Real Problems" },
       {
         name: "description",
         content:

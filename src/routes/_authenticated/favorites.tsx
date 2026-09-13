@@ -12,12 +12,12 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/favorites")({
   head: () => ({
     meta: [
-      { title: "Saved prompts — Meridian" },
+      { title: "Saved prompts — Promptcraft" },
       {
         name: "description",
-        content: "Every prompt you've saved in Meridian, ready to open and reuse.",
+        content: "Every prompt you've saved in Promptcraft, ready to open and reuse.",
       },
-      { property: "og:title", content: "Saved prompts — Meridian" },
+      { property: "og:title", content: "Saved prompts — Promptcraft" },
       { property: "og:description", content: "Your personal shortlist of structured AI prompts." },
     ],
   }),

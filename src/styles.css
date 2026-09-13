@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Meridian design system — "Quiet Ledger".
+ * Promptcraft design system — "Quiet Ledger".
  * Warm paper, ink text, deep green brand, ochre accent.
  * Display type: Fraunces. Body type: Public Sans.
  * All colour values are oklch. Never hardcode colours in components.

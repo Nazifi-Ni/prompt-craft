@@ -14,16 +14,16 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/search")({
   head: () => ({
     meta: [
-      { title: "Search AI Prompts — Meridian" },
+      { title: "Search AI Prompts — Promptcraft" },
       {
         name: "description",
         content:
-          "Search every structured prompt across the Meridian toolkits by title, topic or keyword and open the fill-in workspace.",
+          "Search every structured prompt across the Promptcraft toolkits by title, topic or keyword and open the fill-in workspace.",
       },
-      { property: "og:title", content: "Search AI Prompts — Meridian" },
+      { property: "og:title", content: "Search AI Prompts — Promptcraft" },
       {
         property: "og:description",
-        content: "Find the right structured prompt across all Meridian toolkits in seconds.",
+        content: "Find the right structured prompt across all Promptcraft toolkits in seconds.",
       },
     ],
   }),

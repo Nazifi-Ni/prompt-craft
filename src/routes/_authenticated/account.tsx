@@ -14,13 +14,13 @@ import { formatDate } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/account")({
   head: () => ({
     meta: [
-      { title: "Account settings — Meridian" },
+      { title: "Account settings — Promptcraft" },
       {
         name: "description",
-        content: "Update your Meridian profile details and review your notifications.",
+        content: "Update your Promptcraft profile details and review your notifications.",
       },
-      { property: "og:title", content: "Account settings — Meridian" },
-      { property: "og:description", content: "Manage your Meridian profile." },
+      { property: "og:title", content: "Account settings — Promptcraft" },
+      { property: "og:description", content: "Manage your Promptcraft profile." },
     ],
   }),
   component: AccountPage,

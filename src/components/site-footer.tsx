@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="mt-20 border-t border-border bg-card">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-lg font-semibold text-foreground">Meridian</p>
+          <p className="font-display text-lg font-semibold text-foreground">Promptcraft</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Specialised AI prompt toolkits for scholarship applicants, students, job seekers and
             builders.
@@ -55,7 +55,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Meridian. All rights reserved.
+        © {new Date().getFullYear()} Promptcraft. All rights reserved.
       </div>
     </footer>
   );

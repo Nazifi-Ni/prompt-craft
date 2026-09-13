@@ -14,12 +14,12 @@ import { formatDate, formatPrice } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/subscription")({
   head: () => ({
     meta: [
-      { title: "Your subscription — Meridian" },
+      { title: "Your subscription — Promptcraft" },
       {
         name: "description",
-        content: "Review your Meridian plan, billing history and Pro access status.",
+        content: "Review your Promptcraft plan, billing history and Pro access status.",
       },
-      { property: "og:title", content: "Your subscription — Meridian" },
+      { property: "og:title", content: "Your subscription — Promptcraft" },
       { property: "og:description", content: "Plan status and billing history." },
     ],
   }),

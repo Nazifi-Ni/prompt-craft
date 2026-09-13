@@ -14,13 +14,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Your Meridian dashboard" },
+      { title: "Your Promptcraft dashboard" },
       {
         name: "description",
         content:
-          "Your Meridian workspace: toolkits, saved prompts, recent activity and subscription status.",
+          "Your Promptcraft workspace: toolkits, saved prompts, recent activity and subscription status.",
       },
-      { property: "og:title", content: "Your Meridian dashboard" },
+      { property: "og:title", content: "Your Promptcraft dashboard" },
       { property: "og:description", content: "Toolkits, favourites and subscription in one place." },
     ],
   }),

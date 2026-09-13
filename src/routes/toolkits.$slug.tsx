@@ -14,7 +14,7 @@ import { isPromptPro, isToolkitPro } from "@/lib/access";
 export const Route = createFileRoute("/toolkits/$slug")({
   head: ({ params }) => {
     const pretty = params.slug.replace(/-/g, " ");
-    const title = `${pretty} toolkit — Meridian`;
+    const title = `${pretty} toolkit — Promptcraft`;
     const description = `Structured, fill-in AI prompts in the ${pretty} toolkit. Browse categories, open a prompt and copy a customised version.`;
     return {
       meta: [

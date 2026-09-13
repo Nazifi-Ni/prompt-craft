@@ -11,13 +11,13 @@ import { useSession } from "@/hooks/useAuth";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in or create your Meridian account" },
+      { title: "Sign in or create your Promptcraft account" },
       {
         name: "description",
         content:
-          "Sign in to Meridian to open prompt workspaces, save favourites and manage your Pro subscription.",
+          "Sign in to Promptcraft to open prompt workspaces, save favourites and manage your Pro subscription.",
       },
-      { property: "og:title", content: "Sign in to Meridian" },
+      { property: "og:title", content: "Sign in to Promptcraft" },
       {
         property: "og:description",
         content: "Access your prompt toolkits, favourites and subscription.",
@@ -39,10 +39,10 @@ function AuthPage() {
   useEffect(() => {
     if (!loading && user) {
       // Check for pending referral before navigating away
-      const pendingRef = localStorage.getItem('meridian_ref');
+      const pendingRef = localStorage.getItem('promptcraft_ref');
       if (pendingRef) {
         supabase.rpc('process_referral', { ref_code: pendingRef })
-          .then(() => localStorage.removeItem('meridian_ref'))
+          .then(() => localStorage.removeItem('promptcraft_ref'))
           .catch(console.error)
           .finally(() => navigate({ to: "/dashboard", replace: true }));
       } else {
@@ -56,7 +56,7 @@ function AuthPage() {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get('ref');
     if (ref) {
-      localStorage.setItem('meridian_ref', ref);
+      localStorage.setItem('promptcraft_ref', ref);
       setMode("signup"); // Default to signup if referred
     }
   }, []);
@@ -78,10 +78,10 @@ function AuthPage() {
         toast.success("Account created. Check your email if confirmation is required.");
         
         // Process referral immediately if auto-signed in (no email confirmation)
-        const pendingRef = localStorage.getItem('meridian_ref');
+        const pendingRef = localStorage.getItem('promptcraft_ref');
         if (pendingRef) {
           await supabase.rpc('process_referral', { ref_code: pendingRef });
-          localStorage.removeItem('meridian_ref');
+          localStorage.removeItem('promptcraft_ref');
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -89,10 +89,10 @@ function AuthPage() {
         toast.success("Welcome back.");
         
         // Process referral for existing users too if they clicked a link!
-        const pendingRef = localStorage.getItem('meridian_ref');
+        const pendingRef = localStorage.getItem('promptcraft_ref');
         if (pendingRef) {
           await supabase.rpc('process_referral', { ref_code: pendingRef });
-          localStorage.removeItem('meridian_ref');
+          localStorage.removeItem('promptcraft_ref');
         }
       }
     } catch (err) {
@@ -108,7 +108,7 @@ function AuthPage() {
       <main className="mx-auto flex max-w-md flex-col px-5 pt-14 pb-16">
         <p className="eyebrow">{mode === "signin" ? "Welcome back" : "Get started"}</p>
         <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">
-          {mode === "signin" ? "Sign in to Meridian" : "Create your account"}
+          {mode === "signin" ? "Sign in to Promptcraft" : "Create your account"}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Free members get open prompts, favourites and a dashboard. Pro unlocks the full library.

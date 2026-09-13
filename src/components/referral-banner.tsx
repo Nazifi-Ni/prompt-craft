@@ -96,7 +96,7 @@ export function ReferralBanner() {
   }
 
   const referralUrl = `${window.location.origin}/auth?ref=${refCode}`;
-  const whatsappMessage = `Hey! I'm using Meridian to write my final year project and proposals with AI. Check it out using my link! 🚀\n\n${referralUrl}`;
+  const whatsappMessage = `Hey! I'm using Promptcraft to write my final year project and proposals with AI. Check it out using my link! 🚀\n\n${referralUrl}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
 
   const copyToClipboard = () => {

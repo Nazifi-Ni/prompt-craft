@@ -17,13 +17,13 @@ import { formatPrice } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meridian — Smart AI Prompt Toolkits" },
+      { title: "Promptcraft — Smart AI Prompt Toolkits" },
       {
         name: "description",
         content:
           "AI prompt toolkits tailored for students, job seekers, and professionals. Just fill in your details and let our smart templates do the heavy lifting.",
       },
-      { property: "og:title", content: "Meridian — Smart AI Prompt Toolkits" },
+      { property: "og:title", content: "Promptcraft — Smart AI Prompt Toolkits" },
       {
         property: "og:description",
         content:
@@ -68,7 +68,7 @@ function Home() {
             AI prompts built to solve real problems.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Meridian is a curated library of specialized AI prompt toolkits for scholarships, studies,
+            Promptcraft is a curated library of specialized AI prompt toolkits for scholarships, studies,
             job hunting, and business. Every prompt is carefully tested and ready to use.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
