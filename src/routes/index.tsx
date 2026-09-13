@@ -17,17 +17,17 @@ import { formatPrice } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meridian — AI Prompt Toolkits That Get Real Results" },
+      { title: "Meridian — Smart AI Prompt Toolkits" },
       {
         name: "description",
         content:
-          "Structured AI prompt libraries for scholarship applicants, students, job seekers and developers. Fill in your details, generate a tailored prompt, get better answers.",
+          "AI prompt toolkits tailored for students, job seekers, and professionals. Just fill in your details and let our smart templates do the heavy lifting.",
       },
-      { property: "og:title", content: "Meridian — AI Prompt Toolkits That Get Real Results" },
+      { property: "og:title", content: "Meridian — Smart AI Prompt Toolkits" },
       {
         property: "og:description",
         content:
-          "Structured AI prompt libraries for scholarships, study, careers and code. Guided variables, worked examples, honest guardrails.",
+          "AI prompt toolkits tailored for students, job seekers, and professionals.",
       },
     ],
   }),
@@ -37,18 +37,18 @@ export const Route = createFileRoute("/")({
 const pillars = [
   {
     icon: BookOpen,
-    title: "Written like a reference library",
-    body: "Every prompt carries a purpose, instructions, worked example and a pro tip — not a one-line trick.",
+    title: "Expertly crafted for you",
+    body: "Every prompt comes with clear instructions, helpful tips, and practical examples to guide you step by step.",
   },
   {
     icon: Wand2,
-    title: "Fill the blanks, copy the prompt",
-    body: "Each prompt exposes admin-defined variables. Enter your details and the workspace assembles it for you.",
+    title: "Just fill in the blanks",
+    body: "Simply answer a few quick questions, and our system will automatically assemble the perfect, personalized prompt for you.",
   },
   {
     icon: ShieldCheck,
-    title: "Honest by design",
-    body: "No invented achievements, citations or experiences. Verify every deadline against the official source.",
+    title: "Authentic and accurate",
+    body: "We help you highlight your real achievements. Our prompts are designed to help you tell your true story in the best way possible.",
   },
 ];
 
@@ -65,11 +65,11 @@ function Home() {
         <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 sm:pt-24">
           <p className="eyebrow">AI prompt toolkits</p>
           <h1 className="mt-4 max-w-3xl text-4xl leading-[1.08] font-semibold text-foreground sm:text-6xl">
-            Prompts built for real problems, not for demos.
+            AI prompts built to solve real problems.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Meridian is a curated library of specialised AI prompt toolkits — scholarships, study,
-            job hunting, business and code. Each prompt is structured, tested and ready to fill in.
+            Meridian is a curated library of specialized AI prompt toolkits for scholarships, studies,
+            job hunting, and business. Every prompt is carefully tested and ready to use.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="rounded-full">
@@ -85,8 +85,8 @@ function Home() {
           <dl className="mt-14 grid gap-6 border-t border-border pt-8 sm:grid-cols-3">
             {[
               { k: "Toolkits", v: toolkits.data?.length ?? "—" },
-              { k: "Structured prompts", v: "150+" },
-              { k: "Guardrails", v: "Authenticity first" },
+              { k: "Tested prompts", v: "150+" },
+              { k: "Focus", v: "Your Real Story" },
             ].map((s) => (
               <div key={s.k}>
                 <dt className="label-caps">{s.k}</dt>
@@ -134,7 +134,7 @@ function Home() {
         <section className="mx-auto max-w-6xl px-5 py-12">
           <p className="eyebrow">Membership</p>
           <h2 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
-            Simple, configurable plans
+            Simple, transparent pricing
           </h2>
           <div className="mt-7 grid gap-5 sm:grid-cols-3">
             {(plans.data ?? []).map((plan) => (

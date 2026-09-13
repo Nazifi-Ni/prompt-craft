@@ -49,8 +49,7 @@ function PricingPage() {
           One membership, the whole library
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Every plan is configured in the admin dashboard, so pricing and features stay current
-          without a code change. Free members can use open prompts; Pro unlocks everything.
+          Start for free to explore our essential templates. Upgrade to Pro to unlock our complete, expertly crafted library of prompts across all categories.
         </p>
 
         <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -108,9 +107,7 @@ function PricingPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          Payments are processed by Paystack or Flutterwave with server-side verification. If
-          checkout is not yet configured for this workspace, you'll see a notice on the subscription
-          page.
+          Payments are securely processed via Paystack or Flutterwave.
         </p>
 
         {(faqs ?? []).length > 0 && (
