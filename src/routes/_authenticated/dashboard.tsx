@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookMarked, Heart, Sparkles, User } from "lucide-react";
+import { BookMarked, Heart, Sparkles, User, Users } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolkitCard } from "@/components/toolkit-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { useAccount } from "@/hooks/useAuth";
 import { favoritesQuery, toolkitsQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +42,19 @@ function DashboardPage() {
         .select("id", { count: "exact", head: true })
         .eq("user_id", user!.id);
       return count ?? 0;
+    },
+  });
+
+  const { data: referralCount = 0 } = useQuery({
+    queryKey: ["referral-count", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_referral_count');
+      if (error) {
+        console.error("Error fetching referral count:", error);
+        return 0;
+      }
+      return Number(data) || 0;
     },
   });
 
@@ -88,6 +102,35 @@ function DashboardPage() {
               <p className="text-sm text-muted-foreground">{s.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-4 ledger-card p-5">
+          <div className="flex items-center gap-3">
+            <Users className="size-5 text-primary" />
+            <div>
+              <h3 className="font-display text-lg font-semibold text-foreground">Referral Progress</h3>
+              <p className="text-sm text-muted-foreground">
+                Get 7 days of Pro access for every 5 friends you invite!
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-5">
+            <div className="flex justify-between text-sm font-medium text-foreground mb-2">
+              <span>{referralCount % 5} / 5 Referrals</span>
+              <span>{Math.round(((referralCount % 5) / 5) * 100)}%</span>
+            </div>
+            <Progress value={((referralCount % 5) / 5) * 100} className="h-2" />
+          </div>
+          
+          <p className="mt-4 text-xs text-muted-foreground">
+            {referralCount >= 5 ? 
+              `Amazing! You've referred a total of ${referralCount} people.` : 
+              `You need ${5 - (referralCount % 5)} more referrals to unlock your next Pro reward.`
+            } 
+            <br className="sm:hidden" />
+            <span className="sm:ml-1 italic text-muted-foreground/80">Note: You must have an active or past Pro subscription to claim rewards.</span>
+          </p>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
