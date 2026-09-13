@@ -34,14 +34,13 @@ function SubscriptionPage() {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   useEffect(() => {
-    // Load Paystack script securely
-    const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
+    // Load Paystack script securely (check if exists to support React Strict Mode)
+    if (!document.querySelector('script[src="https://js.paystack.co/v1/inline.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
   }, []);
 
   const handleCheckout = (plan: any) => {
@@ -58,10 +57,12 @@ function SubscriptionPage() {
     setIsCheckoutLoading(true);
     
     try {
+      const amountInKobo = Math.round(Number(plan.price_amount) * 100);
+      
       const handler = (window as any).PaystackPop.setup({
         key: 'pk_live_c7841dbfe0abb4fe3e61556c9d525cb159fafe31',
-        email: user?.email,
-        amount: Number(plan.price_amount) * 100, // Paystack uses kobo (multiply by 100)
+        email: user?.email || "customer@promptcraft.com", // Fallback if email is somehow missing
+        amount: amountInKobo,
         currency: plan.currency || 'NGN',
         callback: async (response: any) => {
           try {
@@ -91,10 +92,10 @@ function SubscriptionPage() {
         }
       });
       handler.openIframe();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setIsCheckoutLoading(false);
-      toast.error("Failed to load payment gateway. Please ensure your public key is set.");
+      toast.error(`Error: ${err.message || String(err)}`);
     }
   };
 
