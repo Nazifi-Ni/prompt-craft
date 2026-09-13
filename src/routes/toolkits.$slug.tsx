@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAccount } from "@/hooks/useAuth";
 import { bonusesQuery, categoriesQuery, promptCardsQuery, toolkitQuery } from "@/lib/queries";
+import { isPromptPro, isToolkitPro } from "@/lib/access";
 
 export const Route = createFileRoute("/toolkits/$slug")({
   head: ({ params }) => {
@@ -107,13 +108,15 @@ function ToolkitDetail() {
             <div className="flex items-center justify-between">
               <p className="label-caps">Access</p>
               <Badge variant={isPro ? "outline" : "secondary"} className="rounded-full">
-                {isPro ? "Pro active" : "Free tier"}
+                {isPro ? "Pro active" : (isToolkitPro(toolkit) ? "Pro only" : "Free tier")}
               </Badge>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {isPro
                 ? "Every prompt in this toolkit is unlocked on your account."
-                : "Free prompts are open to all members. Upgrade to Pro to unlock the full library."}
+                : (isToolkitPro(toolkit)
+                    ? "This toolkit is exclusively for Pro members. Upgrade to Pro to unlock."
+                    : "Free prompts are open to all members. Upgrade to Pro to unlock the full library.")}
             </p>
             <div className="mt-5 flex flex-col gap-2">
               {!isPro && (
@@ -142,7 +145,7 @@ function ToolkitDetail() {
           {/* Free Prompts Category */}
           {(() => {
             const allPrompts = prompts ?? [];
-            const freePrompts = allPrompts.filter((p) => p.access_level === "free");
+            const freePrompts = allPrompts.filter((p) => !isPromptPro(p));
             
             if (freePrompts.length === 0) return null;
             return (
@@ -171,7 +174,7 @@ function ToolkitDetail() {
           {(categories ?? [])
             .map((c) => ({
               ...c,
-              prompts: (prompts ?? []).filter((p) => p.category_id === c.id && p.access_level !== "free"),
+              prompts: (prompts ?? []).filter((p) => p.category_id === c.id && isPromptPro(p)),
             }))
             .filter((c) => c.prompts.length > 0)
             .map((category) => (
@@ -198,7 +201,7 @@ function ToolkitDetail() {
           ))}
 
           {(() => {
-            const proUncategorised = uncategorised.filter((p) => p.access_level !== "free");
+            const proUncategorised = uncategorised.filter((p) => isPromptPro(p));
             if (proUncategorised.length === 0) return null;
             return (
               <section>

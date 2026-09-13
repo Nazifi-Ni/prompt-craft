@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lock, Unlock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Tables } from "@/integrations/supabase/types";
+import { isPromptPro } from "@/lib/access";
 
 export function PromptCard({
   prompt,
@@ -12,7 +13,8 @@ export function PromptCard({
   index?: number;
   unlocked: boolean;
 }) {
-  const locked = prompt.access_level === "pro" && !unlocked;
+  const isPro = isPromptPro(prompt);
+  const locked = isPro && !unlocked;
 
   return (
     <Link

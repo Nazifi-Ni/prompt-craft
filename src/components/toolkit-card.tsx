@@ -2,8 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Tables } from "@/integrations/supabase/types";
+import { isToolkitPro } from "@/lib/access";
 
 export function ToolkitCard({ toolkit }: { toolkit: Tables<"toolkits"> }) {
+  const pro = isToolkitPro(toolkit);
+
   return (
     <Link
       to="/toolkits/$slug"
@@ -12,12 +15,12 @@ export function ToolkitCard({ toolkit }: { toolkit: Tables<"toolkits"> }) {
     >
       <div className="flex items-start justify-between gap-3">
         <p className="label-caps">{toolkit.audience ?? "Toolkit"}</p>
-        {toolkit.access_level === "pro" ? (
+        {pro ? (
           <Badge variant="secondary" className="gap-1 rounded-full text-[11px]">
             <Lock className="size-3" /> Pro
           </Badge>
         ) : (
-          <Badge className="rounded-full bg-accent text-[11px] text-accent-foreground">Free</Badge>
+          <Badge className="rounded-full bg-accent text-[11px] text-accent-foreground">Free access</Badge>
         )}
       </div>
       <h3 className="mt-3 font-display text-xl leading-snug font-semibold text-foreground">

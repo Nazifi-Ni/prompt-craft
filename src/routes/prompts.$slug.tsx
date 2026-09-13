@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/useAuth";
 import { favoritesQuery, promptCardBySlugQuery, promptQuery } from "@/lib/queries";
 import { fillTemplate, parseVariables } from "@/lib/format";
+import { isPromptPro } from "@/lib/access";
 
 export const Route = createFileRoute("/prompts/$slug")({
   head: ({ params }) => {
@@ -98,8 +99,15 @@ function PromptWorkspace() {
     );
   }
 
-  // RLS hides premium bodies: metadata exists but the full row does not.
-  if (!full) {
+  const requiresPro = isPromptPro({
+    slug: card?.slug ?? slug,
+    category_slug: card?.category_slug ?? full?.category?.slug,
+    toolkit_slug: card?.toolkit_slug ?? full?.toolkit?.slug,
+    access_level: card?.access_level ?? full?.access_level,
+  });
+
+  // RLS hides premium bodies, or client access rules lock it for non-pro users
+  if (!full || (requiresPro && !isPro)) {
     return (
       <div className="min-h-screen bg-background">
         <SiteHeader />
@@ -107,10 +115,11 @@ function PromptWorkspace() {
           <div className="ledger-card p-8">
             <Lock className="mx-auto size-6 text-muted-foreground" />
             <h1 className="mt-4 font-display text-2xl font-semibold text-foreground">
-              {card?.title ?? "This prompt is locked"}
+              {card?.title ?? full?.title ?? "This prompt is locked"}
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {card?.description ??
+                full?.description ??
                 "This prompt is part of the Pro library."}
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -161,8 +170,8 @@ function PromptWorkspace() {
               <Badge variant="outline" className="rounded-full">
                 {full.difficulty}
               </Badge>
-              <Badge variant={full.access_level === "pro" ? "secondary" : "outline"} className="rounded-full">
-                {full.access_level === "pro" ? "Pro" : "Free"}
+              <Badge variant={requiresPro ? "secondary" : "outline"} className="rounded-full">
+                {requiresPro ? "Pro" : "Free"}
               </Badge>
               {(full.tags ?? []).map((t) => (
                 <span key={t} className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
