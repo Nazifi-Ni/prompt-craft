@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolkitCard } from "@/components/toolkit-card";
+import { ReferralBanner } from "@/components/referral-banner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -64,6 +65,8 @@ function ToolkitsPage() {
           Each toolkit is a curated set of categories and structured prompts for one specific
           audience. Free prompts are open to every signed-in member; Pro unlocks the full library.
         </p>
+
+        <ReferralBanner />
 
         <div className="mt-8 flex flex-wrap items-center gap-6 rounded-xl border border-border bg-card p-4 shadow-sm">
           <div className="relative flex-1 min-w-[240px]">

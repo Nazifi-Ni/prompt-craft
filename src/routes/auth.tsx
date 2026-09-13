@@ -37,8 +37,29 @@ function AuthPage() {
   const { user, loading } = useSession();
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/dashboard", replace: true });
+    if (!loading && user) {
+      // Check for pending referral before navigating away
+      const pendingRef = localStorage.getItem('meridian_ref');
+      if (pendingRef) {
+        supabase.rpc('process_referral', { ref_code: pendingRef })
+          .then(() => localStorage.removeItem('meridian_ref'))
+          .catch(console.error)
+          .finally(() => navigate({ to: "/dashboard", replace: true }));
+      } else {
+        navigate({ to: "/dashboard", replace: true });
+      }
+    }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    // Capture referral code from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      localStorage.setItem('meridian_ref', ref);
+      setMode("signup"); // Default to signup if referred
+    }
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,10 +76,24 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Account created. Check your email if confirmation is required.");
+        
+        // Process referral immediately if auto-signed in (no email confirmation)
+        const pendingRef = localStorage.getItem('meridian_ref');
+        if (pendingRef) {
+          await supabase.rpc('process_referral', { ref_code: pendingRef });
+          localStorage.removeItem('meridian_ref');
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back.");
+        
+        // Process referral for existing users too if they clicked a link!
+        const pendingRef = localStorage.getItem('meridian_ref');
+        if (pendingRef) {
+          await supabase.rpc('process_referral', { ref_code: pendingRef });
+          localStorage.removeItem('meridian_ref');
+        }
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Authentication failed");
