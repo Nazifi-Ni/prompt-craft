@@ -64,11 +64,11 @@ function AdminOverview() {
             <p className="mt-1 text-sm text-muted-foreground">Manage {link.label.toLowerCase()}</p>
           </Link>
         ))}
-        <div className="ledger-card p-5">
+        <Link to="/admin/analytics" className="ledger-card ledger-card-hover p-5 block">
           <p className="label-caps text-muted-foreground">Activity</p>
           <p className="mt-2 text-sm text-foreground">{data?.subs ?? 0} subscription records</p>
           <p className="text-sm text-foreground">{data?.copies ?? 0} prompt copies tracked</p>
-        </div>
+        </Link>
       </div>
     </section>
   );

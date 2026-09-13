@@ -148,7 +148,7 @@ function AdminAnalytics() {
             <div key={`${s.query}-${i}`} className="flex items-center justify-between gap-3 py-2.5">
               <span className="truncate text-sm text-foreground">{s.query}</span>
               <span className="text-xs text-muted-foreground">
-                {s.results_count} results · {formatDate(s.created_at)}
+                {s.results_count} results — {formatDate(s.created_at)}
               </span>
             </div>
           ))}

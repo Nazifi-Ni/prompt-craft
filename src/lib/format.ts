@@ -12,7 +12,7 @@ export function formatPrice(amount: number, currency = "NGN") {
 }
 
 export function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
+  if (!value) return 'N/A';
   return new Date(value).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
