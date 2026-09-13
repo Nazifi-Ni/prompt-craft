@@ -58,7 +58,7 @@ function SubscriptionPage() {
     setIsCheckoutLoading(true);
     const paystack = new (window as any).PaystackPop();
     paystack.newTransaction({
-      key: 'pk_test_YOUR_PAYSTACK_PUBLIC_KEY', // <-- USER MUST CHANGE THIS
+      key: 'pk_live_c7841dbfe0abb4fe3e61556c9d525cb159fafe31', // <-- USER MUST CHANGE THIS
       email: user?.email,
       amount: Number(plan.price_amount) * 100, // Paystack uses kobo (multiply by 100)
       currency: plan.currency || 'NGN',
